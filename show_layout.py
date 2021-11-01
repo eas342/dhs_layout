@@ -17,6 +17,7 @@ apListAll = [apListSW,apListLW]
 subarrayListSW = ['NRCA1_GRISMTS256', 'NRCA1_GRISMTS128',
                   'NRCA1_GRISMTS64', 'NRCA3_GRISMTS256', 'NRCA3_GRISMTS128',
                   'NRCA3_GRISMTS64']
+
 subarrayListLW = ['NRCA5_GRISM256_F322W2', 'NRCA5_GRISM128_F322W2', 'NRCA5_GRISM64_F322W2']#,
                   # 'NRCA5_GRISM256_F277W', 'NRCA5_GRISM128_F277W', 'NRCA5_GRISM64_F277W',
                   # 'NRCA5_GRISM256_F356W', 'NRCA5_GRISM128_F356W', 'NRCA5_GRISM64_F356W',
@@ -130,7 +131,7 @@ def show_subarrays(axArr):
         for oneApName in subarrayList:
             oneAp = siaf[oneApName]
             oneAp.plot(ax=axArr[waveInd],fill=True)
-            oneAp.plot_frame_origin('sci',ax=axArr[waveInd])
+            #oneAp.plot_frame_origin('sci',ax=axArr[waveInd])
 
 def show_layout(yShift=0):
     
