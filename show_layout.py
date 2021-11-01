@@ -152,7 +152,7 @@ def show_layout(yShift=0):
 def all_field_points():
     show_layout(yShift=0) ## CV3 measured field point
     show_layout(yShift=-61.6) ## subarray field point
-    
+    show_layout(yShift=-49.63) ## full frame field point
     
 if __name__ == "__main__":
     all_field_points()
