@@ -27,9 +27,12 @@ subarrayListLW = ['NRCA5_GRISM256_F322W2', 'NRCA5_GRISM128_F322W2', 'NRCA5_GRISM
 
 subarrayListAll = [subarrayListSW, subarrayListLW]
 
-def make_csv():
+def make_csv(meas=1):
     table_path = '../spectra_locations/'
-    baseName = 'spectra_locations_science_pixel_coordinates'
+    
+    extra_descrip = get_extra_descrip(meas)
+    baseName = 'spectra_locations_science_pixel_coordinates{}'.format(extra_descrip)
+    
     dat = pd.read_excel(table_path+baseName+'.xlsx')
     dat.to_csv('data/'+baseName+'.csv',index=False)
 
@@ -54,8 +57,11 @@ def reversibility(orig='sci',new='tel'):
     print(new_x)
     print(new_y)
 
-def show_spectra(axArr,yShift=0,xShift=0):
-    dat = ascii.read('data/spectra_locations_science_pixel_coordinates.csv')
+def show_spectra(axArr,yShift=0,xShift=0,meas=1):
+    
+    extra_descrip = get_extra_descrip(meas)
+    dat = ascii.read('data/spectra_locations_science_pixel_coordinates{}.csv'.format(extra_descrip))
+    
     outDat = Table()
     outDat['Spectra Description'] = dat['Spectra Description']
     outDat['telx1'] = np.nan
@@ -112,7 +118,7 @@ def show_spectra(axArr,yShift=0,xShift=0):
             #if sp['Spectra Description'] == 'DHS 7':
             #    pdb.set_trace()
             
-    outDat.write('data/spec_locations_tel_coor_yshift_{}.csv'.format(yShift),overwrite=True)
+    outDat.write('data/spec_locations_tel_coor_yshift_{}{}.csv'.format(yShift,extra_descrip),overwrite=True)
 
 def show_detectors(axArr):
     for waveInd,apList in enumerate(apListAll):
@@ -133,26 +139,53 @@ def show_subarrays(axArr):
             oneAp.plot(ax=axArr[waveInd],fill=True)
             #oneAp.plot_frame_origin('sci',ax=axArr[waveInd])
 
-def show_layout(yShift=0):
+def get_extra_descrip(meas):
+    if meas == 1:
+        extra_descrip = ""
+    else:
+        extra_descrip = "_meas_{}".format(meas)
+    return extra_descrip
+
+def show_layout(yShift=0,meas=1,zoom=False):
+    """
+    Show layout of DHS spectra
+    
+    Parameters
+    ----------
+    yShift: float
+        How much to shift in Y telescope coordinates
+    meas: int
+        Which measurement to read in
+    """
     
     fig, axArr = plt.subplots(1,2,sharey=True)
     #sci_x = 
-    show_detectors(axArr)
+    
     show_subarrays(axArr)
-    show_spectra(axArr,yShift=yShift)
+    show_spectra(axArr,yShift=yShift,meas=meas)
+    
+    extra_descrip = get_extra_descrip(meas)
+    
+    if zoom == True:
+        extra_descrip = extra_descrip + '_zoom'
+        axArr[0].set_ylim(-563,-550)
+        axArr[0].set_xlim(150,50)
+        #axArr[0].set_aspect('auto')
+    else:
+        show_detectors(axArr)
     
     ## there are some weird transformation things happening with xlim that are fixed here
     # for oneAx in axArr:
     #      oneAx.set_ylim(-650,-350)
     #      oneAx.set_xlim(160,0)
-    fig.savefig('plots/spectra_layout_yshift_{}_arcsec.pdf'.format(yShift),
+    fig.savefig('plots/spectra_layout_yshift_{}_arcsec{}.pdf'.format(yShift,extra_descrip),
                 bbox_inches='tight')
     plt.close(fig)
     
 def all_field_points():
     show_layout(yShift=0) ## CV3 measured field point
     show_layout(yShift=-61.6) ## subarray field point
-    show_layout(yShift=-49.63) ## full frame field point
+    show_layout(yShift=-45.77) ## full frame field point
     
 if __name__ == "__main__":
     all_field_points()
